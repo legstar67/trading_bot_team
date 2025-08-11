@@ -1,5 +1,9 @@
 import requests
 from enum import Enum
+import hashlib
+import hmac
+import time
+import urllib.parse
 
 class ApiBroker:
     def __init__(self, api_key: str, api_secret: str, endpoints: dict):
@@ -76,12 +80,53 @@ class ApiBroker:
                 "taker_buy_quote_asset_volume" : response[0][10]}
 
 
-    def create_order(self, symbol: str, side: str, quantity: float, price: float):
-        # Implementation for creating an order 
-        pass
+    def create_order_spot(self, symbol: str, side: str, type : str, quantity: float, price: float):
+        # check if enough ressources to place the order TODO
+        #pass
+
+        # place the order 
+        params = {
+            "symbol" : symbol,
+            "side" : side, #"BUY" or "SELL"
+            "type" : type, # "LIMIT" "MARKET" "STOP_LOSS" "STOP_LOSS_LIMIT" "TAKE_PROFIT" "TAKE_PROFIT_LIMIT" "LIMIT_MAKER"
+            "timeInForce": None,  # ENUM, optional
+            "quantity": None,     # DECIMAL, optional
+            "quoteOrderQty": None, # DECIMAL, optional
+            "price": None,        # DECIMAL, optional
+            "newClientOrderId": None, # STRING, optional
+            "strategyId": None,   # LONG, optional
+            "strategyType": None, # INT, optional
+            "stopPrice": None,    # DECIMAL, optional
+            "trailingDelta": None, # LONG, optional
+            "icebergQty": None,   # DECIMAL, optional
+            "newOrderRespType": None, # ENUM, optional (ACK, RESULT, FULL)
+            "selfTradePreventionMode": None, # ENUM, optional
+            "recvWindow": None,   # LONG, optional, <= 60000
+            "timestamp": timestamp # mandatory, LONG
+        }
+
+
     def get_account_info(self):
         # Implementation for getting account information
         pass
+
+    def __get_signature__(self, params):
+
+        query_string = urllib.parse.urlencode(params)
+
+        signature = hmac.new(self.api_secret.encode(), query_string.encode(), hashlib.sha256).hexdigest()
+        return signature
+    
+
+    def __send_request_with_signature__(self, method: str,url : str, endpoint: str, params: dict = None):
+
+
+        signature = self.__get_signature__(params)
+        new_params = params.copy()
+        new_params[signature] = signature
+
+        response = self.__send_simple_request__(url=url, endpoint=endpoint,params=new_params)
+        return response
 
 
 
@@ -94,4 +139,5 @@ class Endpt_name(Enum):
     Get_account_info = "get_account_info"
     Create_order = "create_order"
     Get_data_interval_pair = "get_price_change24h_pair"
+    Create_order_test = "create_order_test"
     
