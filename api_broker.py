@@ -80,7 +80,11 @@ class ApiBroker:
                 "taker_buy_quote_asset_volume" : response[0][10]}
 
 
-    def create_order_spot(self, symbol: str, side: str, type : str, quantity: float, price: float):
+    def create_order_spot(self, symbol: str,
+                            side: str,
+                            type : str, 
+                            quantity: float, 
+                            price: float):
         # check if enough ressources to place the order TODO
         #pass
 
@@ -90,9 +94,9 @@ class ApiBroker:
             "side" : side, #"BUY" or "SELL"
             "type" : type, # "LIMIT" "MARKET" "STOP_LOSS" "STOP_LOSS_LIMIT" "TAKE_PROFIT" "TAKE_PROFIT_LIMIT" "LIMIT_MAKER"
             "timeInForce": None,  # ENUM, optional
-            "quantity": None,     # DECIMAL, optional
+            "quantity": quantity,     # DECIMAL, optional
             "quoteOrderQty": None, # DECIMAL, optional
-            "price": None,        # DECIMAL, optional
+            "price": price,        # DECIMAL, optional
             "newClientOrderId": None, # STRING, optional
             "strategyId": None,   # LONG, optional
             "strategyType": None, # INT, optional
@@ -102,7 +106,7 @@ class ApiBroker:
             "newOrderRespType": None, # ENUM, optional (ACK, RESULT, FULL)
             "selfTradePreventionMode": None, # ENUM, optional
             "recvWindow": None,   # LONG, optional, <= 60000
-            "timestamp": timestamp # mandatory, LONG
+            "timestamp": int(time.time()) # mandatory, LONG
         }
 
 
@@ -123,15 +127,31 @@ class ApiBroker:
 
         signature = self.__get_signature__(params)
         new_params = params.copy()
-        new_params[signature] = signature
+        new_params["signature"] = signature
 
-        response = self.__send_simple_request__(url=url, endpoint=endpoint,params=new_params)
+        response = self.__send_simple_request__(method, url=url, endpoint=endpoint,params=new_params)
         return response
 
 
+    def get_info_account(self):
+        endpoint = self.endpoints[Endpt_name.Get_account_info]
+        url = self.endpoints[Endpt_name.URL]
+        params = {
+            "timestamp": self.__get_local_time__(),
+        }
+        response = self.__send_request_with_signature__("GET", url, endpoint, params)
+        return response
 
-
-
+    def get_time_server(self):
+        endpoint = self.endpoints[Endpt_name.Get_time_server]
+        url = self.endpoints[Endpt_name.URL]
+        # params = {
+        #     "timestamp": int(time.time()),
+        # }
+        response = self.__send_simple_request__("GET", url, endpoint)
+        return response
+    def __get_local_time__(self):
+        return int(time.time()*1000)
 
 class Endpt_name(Enum):
     URL = "url" 
@@ -140,4 +160,4 @@ class Endpt_name(Enum):
     Create_order = "create_order"
     Get_data_interval_pair = "get_price_change24h_pair"
     Create_order_test = "create_order_test"
-    
+    Get_time_server = "get_time_server"
