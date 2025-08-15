@@ -34,4 +34,4 @@ binanceApi = ApiBroker(secret_key, api_key, endpoints_Binance_test)
 
 print(binanceApi.get_info_account())
 print("time server ", binanceApi.get_time_server())
-#print(binanceApi.create_order_spot("BTCUSDT", "BUY", "LIMIT", 0.001, 122600))
+#print(binanceApi.create_order_spot("BTCUSDT", "BUY", "LIMIT", 0.001, 122600))  
