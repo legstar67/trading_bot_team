@@ -13,7 +13,7 @@ class ApiBroker:
 
 
     
-    def __send_simple_request__(self, method: str,url : str, endpoint: str, params: dict = None):
+    def _send_simple_request(self, method: str,url : str, endpoint: str, params: dict = None):
         """Send a request to the API to get the price
 
         Args:
@@ -50,7 +50,7 @@ class ApiBroker:
         endpoint = self.endpoints[Endpt_name.Get_price_pair]#"/futures/data/delivery-price"
         url = self.endpoints[Endpt_name.URL]
         params = {"symbol": pair}
-        return self.__send_simple_request__("GET",url, endpoint, params)
+        return self._send_simple_request("GET",url, endpoint, params)
 
     def get_data_interval_pair(self, pair:str,  interval = "1d",    ):
         """Get data for a specific pair and interval
@@ -74,7 +74,7 @@ class ApiBroker:
                   "timeZone" : "02:00",
                   "startTime" : None,
                   "endTime" : None} #what is this ? 
-        response = self.__send_simple_request__("GET", url, endpoint, params)
+        response = self._send_simple_request("GET", url, endpoint, params)
         return {"open_time" : response[0][0],
                 "open_price" : response[0][1],
                 "high_price" : response[0][2],
@@ -118,7 +118,7 @@ class ApiBroker:
         }
         endpoint = self.endpoints[Endpt_name.Create_order_spot]
         url = self.endpoints[Endpt_name.URL]
-        response = self.__send_request_with_signature__("POST", url, endpoint, params)
+        response = self._send_request_with_signature("POST", url, endpoint, params)
         return response
 
     def create_order_futures(self, symbol: str, side : str, positionside : str, type: str, timeInForce: str, quantity: float, reducedOnly: str, price: float, orderID: str,
@@ -173,11 +173,11 @@ class ApiBroker:
                     "selfTradePreventionMode": None,# Optional: "EXPIRE_TAKER", "EXPIRE_MAKER", "EXPIRE_BOTH", "NONE". Default is "NONE".
                     "goodTillDate": None,           # Optional: Timestamp in ms for GTD orders.
                     "recvWindow": None,             # Optional: The number of milliseconds after timestamp the request is valid for.
-                    "timestamp": self.__get_local_time__()# Mandatory: Current server time in milliseconds.
+                    "timestamp": self._get_local_time()# Mandatory: Current server time in milliseconds.
                 }
         endpoint = self.endpoints[Endpt_name.Create_order_futures]
         url = self.endpoints[Endpt_name.URL]
-        response = self.__send_request_with_signature__("POST", url, endpoint, params)
+        response = self._send_request_with_signature("POST", url, endpoint, params)
         return response
             
 
@@ -186,7 +186,7 @@ class ApiBroker:
         # Implementation for getting account information
         pass
 
-    def __get_signature__(self, params):
+    def _get_signature(self, params):
 
         query_string = urllib.parse.urlencode(params)
 
@@ -194,14 +194,14 @@ class ApiBroker:
         return signature
     
 
-    def __send_request_with_signature__(self, method: str,url : str, endpoint: str, params: dict = None):
+    def _send_request_with_signature(self, method: str,url : str, endpoint: str, params: dict = None):
 
 
-        signature = self.__get_signature__(params)
+        signature = self._get_signature(params)
         new_params = params.copy()
         new_params["signature"] = signature
 
-        response = self.__send_simple_request__(method, url=url, endpoint=endpoint,params=new_params)
+        response = self._send_simple_request(method, url=url, endpoint=endpoint,params=new_params)
         return response
 
 
@@ -209,9 +209,9 @@ class ApiBroker:
         endpoint = self.endpoints[Endpt_name.Get_account_info]
         url = self.endpoints[Endpt_name.URL]
         params = {
-            "timestamp": self.__get_local_time__(),
+            "timestamp": self._get_local_time(),
         }
-        response = self.__send_request_with_signature__("GET", url, endpoint, params)
+        response = self._send_request_with_signature("GET", url, endpoint, params)
         return response
 
     def get_time_server(self):
@@ -220,9 +220,9 @@ class ApiBroker:
         # params = {
         #     "timestamp": int(time.time()),
         # }
-        response = self.__send_simple_request__("GET", url, endpoint)
+        response = self._send_simple_request("GET", url, endpoint)
         return response
-    def __get_local_time__(self):
+    def _get_local_time(self):
         return int(time.time()*1000)
 
 class Endpt_name(Enum):
