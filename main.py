@@ -22,7 +22,7 @@ endpoints_Binance = {
 
 endpoints_Binance_test = endpoints_Binance.copy()
 endpoints_Binance_test[Endpt_name.URL] = "https://testnet.binance.vision/"
-endpoints_Binance_test[Endpt_name.Create_order] = "/api/v3/order/test"
+endpoints_Binance_test[Endpt_name.Create_order_spot] = "/api/v3/order/test"
 
 
 
