@@ -13,7 +13,9 @@ endpoints_Binance = {
     Endpt_name.Get_data_interval_pair: "/api/v3/klines",
     Endpt_name.Create_order_test: "/api/v3/order",
     Endpt_name.Get_account_info: "/api/v3/account",
-    Endpt_name.Get_time_server : "/api/v3/time"
+    Endpt_name.Get_time_server : "/api/v3/time",
+    Endpt_name.Create_order_futures: "/fapi/v1/order",
+    Endpt_name.Get_account_info_futures: "/fapi/v3/account",
     # "get_account_info": "/v1/account",
     # "create_order": "/v1/order"
 }   

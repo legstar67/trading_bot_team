@@ -5,6 +5,7 @@ import hmac
 import time
 import urllib.parse
 
+#choose to not take care of the rate limit, as on binance it's large enough. Can be added later if needed.
 class ApiBroker:
     def __init__(self, api_key: str, api_secret: str, endpoints: dict):
         self.api_key = api_key
@@ -151,6 +152,8 @@ class ApiBroker:
             dict: The response from the exchange containing order details.
         Raises:
             ValueError: If the provided parameters are invalid.
+        Docs: 
+            https://developers.binance.com/docs/derivatives/usds-margined-futures/trade/rest-api
         """
         params = {
                     "symbol": symbol,
@@ -182,9 +185,20 @@ class ApiBroker:
             
 
 
-    def get_account_info(self):
-        # Implementation for getting account information
-        pass
+    def get_account_info_futures(self):
+        """Get account information for futures trading.
+        Returns:
+            dict: A dictionary containing account information for futures trading.
+        Docs:
+            https://developers.binance.com/docs/derivatives/usds-margined-futures/account/rest-api/Account-Information-V3
+        """
+        endpoint = self.endpoints[Endpt_name.Get_account_info_futures]
+        url = self.endpoints[Endpt_name.URL]
+        params = {
+            "timestamp": self._get_local_time(),
+        }
+        response = self._send_request_with_signature("GET", url, endpoint, params)
+        return response
 
     def _get_signature(self, params):
 
@@ -193,7 +207,6 @@ class ApiBroker:
         signature = hmac.new(self.api_secret.encode(), query_string.encode(), hashlib.sha256).hexdigest()
         return signature
     
-
     def _send_request_with_signature(self, method: str,url : str, endpoint: str, params: dict = None):
 
 
@@ -234,3 +247,4 @@ class Endpt_name(Enum):
     Create_order_test = "create_order_test"
     Get_time_server = "get_time_server"
     Create_order_futures = "create_order_futures"
+    Get_account_info_futures = "get_account_info_futures"
