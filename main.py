@@ -9,13 +9,15 @@ api_key = os.getenv("API_KEY")
 
 endpoints_Binance = {
     Endpt_name.URL : "https://api.binance.com",
-    Endpt_name.Get_price_pair :"/api/v3/ticker/price", #"/fapi/v1/ticker/price" #"/futures/data/delivery-price",
+    Endpt_name.Get_price_pair :"/api/v3/ticker/price", #https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#symbol-price-ticker
     Endpt_name.Get_data_interval_pair: "/api/v3/klines",
     Endpt_name.Create_order_test: "/api/v3/order",
     Endpt_name.Get_account_info: "/api/v3/account",
     Endpt_name.Get_time_server : "/api/v3/time",
     Endpt_name.Create_order_futures: "/fapi/v1/order",
     Endpt_name.Get_account_info_futures: "/fapi/v3/account",
+    Endpt_name.Get_open_orders_futures: "/fapi/v1/openOrders", #Note : if no symbol , it costs 40 more than a request with symbol, for the rate limit on Binance
+    Endpt_name.Get_positions_futures: "/fapi/v3/positionRisk",
     # "get_account_info": "/v1/account",
     # "create_order": "/v1/order"
 }   

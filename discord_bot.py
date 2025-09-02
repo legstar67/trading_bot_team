@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands, tasks
 import os
 import dotenv
+from api_broker import ApiBroker
+from discord_bot_tools import send_message, ColorMsg
 
 class MyBot(commands.Bot):
     def __init__(self, command_prefix, intents):
@@ -25,12 +27,30 @@ class MyBot(commands.Bot):
         print(f"Pièces jointes : {message.attachments}")
         print(f"Embeds : {message.embeds}")
         if message.content.startswith(self.command_prefix):
+
+
+            l = command.split()
+            sizeL = len(l)
             print(f"Received command: {message.content}")
             command = message.content[len(self.command_prefix):].strip()
             if command == 'test':
                 await message.channel.send(' test received!!')
 
+    
 
+            if sizeL == 2 and "getPrice" == l[0]:
+                response = ApiBroker.get_price(l[1])
+                price = response["price"]
+                pair = response["symbol"]
+                send_message(self,
+                             message.channel.id,
+                             f"Price {pair}: {price}",
+                             ColorMsg.BLEU
+                )
+
+
+            #TODO command to look to our account 
+        
 
 if __name__ == "__main__":
     
@@ -45,3 +65,10 @@ if __name__ == "__main__":
     print("Bot is running...")
     # bot.add_cog(MyBot(command_prefix='!', intents=intents))
     # print("Bot has started successfully.")
+
+
+
+
+
+
+
